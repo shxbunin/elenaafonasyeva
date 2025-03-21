@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#102026"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Елена Афонасьева</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="nav no-select">
+            <span class="title no-select">Елена Афонасьева</span>
+            <span class="nav-menu no-select">
+                <span class="menu-item no-select" id="gallery-link">галерея</span>
+                <span class="menu-item middle no-select" id="about-link">о художнике</span>
+                <span class="menu-item no-select" id="contacts-link">контакты</span>
+            </span>
+            <span class="nav-menu-loader no-select">
+                <img class="no-select" id="menu-icon" src="{{ url_for('static', filename='root/menu.svg') }}" alt="">
+            </span>
+        </div>
+    </header>
+    <div class="more no-select" id="more">
+        <div class="container no-select">
+            <div class="menu-item no-select" id="gallery-link-mobile">галерея</div>
+            <div class="menu-item vertical-middle no-select" id="about-link-mobile">о художнике</div>
+            <div class="menu-item vertical-last no-select" id="contacts-link-mobile">контакты</div>
+        </div>
+    </div>
+    <div class="main-picture-container no-select">
+        <img class="main-picture no-select" src="{{ url_for('static', filename='root/main.jpg') }}" alt="">
+    </div>
+    <div class="container no-select" id="gallery">
+        {% for t, d in a.items() %}
+        {% if d != [] %}
+        <div class="block no-select">
+            <div class="gallery-title no-select">{{ t }}</div>
+            <div class="gallery no-select">
+                {% for p in d %}
+                <div class="photo no-select"><img src="{{ url_for('static', filename='photos/' + p[0]) }}" data-description="{{ p[1] }}"></div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div class="about no-select" id="about">
+        <div class="container no-select">
+            <div class="title no-select">Елена Афонасьева</div>
+            <div class="about-table no-select">
+                <div class="about-caption no-select">г. Екатеринбург</div>
+                <div class="about-photo no-select"><img src="{{ url_for('static', filename='root/image.jpg') }}" alt=""></div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container no-select" id="contacts">
+            <div class="links no-select">
+                <div class="telegram-link no-select"><a href=""><img src="{{ url_for('static', filename='root/telegram.svg') }}" alt=""></a></div>
+                <div class="vk-link no-select"><a href=""><img src="{{ url_for('static', filename='root/vk.svg') }}" alt=""></a></div>
+                <div class="email-link no-select"><a href=""><img src="{{ url_for('static', filename='root/email.svg') }}" alt=""></a></div>
+            </div>
+            <div class="copy no-select">© 2025  ЕЛЕНА АФОНАСЬЕВА. ВСЕ ПРАВА ЗАЩИЩЕНЫ.</div>
+        </div>
+    </footer>
+    <div class="overlay no-select" id="overlay">
+        <img class="no-select" src="" alt="" id="fullImage">
+        <div class="image-description no-select" id="imageDescription"></div>
+    </div>
+
+    <script>
+        const photos = document.querySelectorAll('.photo img');
+        const overlay = document.getElementById('overlay');
+        const fullImage = document.getElementById('fullImage');
+        const navMenuLoader = document.querySelector('.nav-menu-loader');
+        const body = document.querySelector('body');
+        const menuIcon = document.getElementById('menu-icon');
+        const menu = document.getElementById('more');
+        
+        const getScrollbarWidth = () => {
+            const scrollDiv = document.createElement('div');
+            scrollDiv.style.width = '100px';
+            scrollDiv.style.height = '100px';
+            scrollDiv.style.overflowY = 'scroll';
+            scrollDiv.style.position = 'absolute';
+            scrollDiv.style.top = '-9999px';
+            document.body.appendChild(scrollDiv);
+            const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+            document.body.removeChild(scrollDiv);
+            return scrollbarWidth;
+        };
+
+
+        navMenuLoader.addEventListener('click', function() {
+            if (menuIcon.src.endsWith('menu.svg')) {
+                menu.classList.add('show');
+                setTimeout(() => { menuIcon.src = "{{ url_for('static', filename='root/x.svg') }}"; }, 100); 
+            } else {
+                menu.classList.remove('show');
+                setTimeout(() => { menuIcon.src = "{{ url_for('static', filename='root/menu.svg') }}"; }, 0); 
+            }
+        });
+
+        body.addEventListener('click', function() {
+            if (menuIcon.src.endsWith('x.svg')) {
+                menu.classList.remove('show');
+                setTimeout(() => { menuIcon.src = "{{ url_for('static', filename='root/menu.svg') }}"; }, 0); 
+            } 
+        });
+
+        photos.forEach(photo => {
+            photo.addEventListener('click', function() {
+                fullImage.src = this.src;
+                const nav = document.querySelector('.nav');
+                const scrollbarWidth = getScrollbarWidth();
+                const description = this.getAttribute('data-description');
+                const imageDescription = document.getElementById('imageDescription');
+                imageDescription.textContent = description;
+                overlay.classList.add('active');
+                document.body.classList.add('no-scroll');
+                document.body.style.overflow = 'hidden';
+                nav.style.paddingRight = `${scrollbarWidth}px`;
+                document.body.style.paddingRight = `${scrollbarWidth}px`;
+            });
+        });
+
+        overlay.addEventListener('click', function() {
+            overlay.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+            document.querySelector('.nav').style.paddingRight = '';
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            setTimeout(() => fullImage.src = '', 150); 
+        });
+
+        function scrollToElementWithOffset(elementId, offset = 150) {
+            const element = document.getElementById(elementId);
+            const y = element.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({
+                    top: y,
+                    behavior: 'smooth'
+                });
+        }
+
+        document.getElementById('gallery-link').addEventListener('click', () => {
+            scrollToElementWithOffset('gallery');
+        });
+
+        document.getElementById('about-link').addEventListener('click', () => {
+            scrollToElementWithOffset('about');
+        });
+
+        document.getElementById('contacts-link').addEventListener('click', () => {
+            scrollToElementWithOffset('contacts');
+        });
+
+        document.getElementById('gallery-link-mobile').addEventListener('click', () => {
+            scrollToElementWithOffset('gallery');
+        });
+
+        document.getElementById('about-link-mobile').addEventListener('click', () => {
+            scrollToElementWithOffset('about');
+        });
+
+        document.getElementById('contacts-link-mobile').addEventListener('click', () => {
+            scrollToElementWithOffset('contacts');
+        });
+    </script>
+</body>
+</html>
