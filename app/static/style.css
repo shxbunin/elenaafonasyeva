@@ -89,21 +89,21 @@ legend {
 
 @font-face {
     font-family: 'Vetrino'; 
-    src: url('fonts/Vetrino.otf') format('opentype');
+    src: url('./fonts/Vetrino.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Futura'; 
-    src: url('fonts/Futura-PT_Cond-Book.otf') format('opentype');
+    src: url('./fonts/Futura-PT_Cond-Book.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Futura Medium'; 
-    src: url('fonts/futuralight-light.otf') format('opentype');
+    src: url('./fonts/futuralight-light.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
